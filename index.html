@@ -84,6 +84,22 @@ myLinkoff.onclick = function(){
 
 </script>
 </center>
+<pre id= "TEMP"</pre>
+
+<a href='linkhref.html' id='temp' class='class1'>Check Temp</a>
+
+<script type="text/javascript">
+var myLink = document.getElementById('temp');
+myLink.onclick = function(){
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "2018SmartRoom.github.io/temp.js"; 
+    document.getElementsByTagName("head")[0].appendChild(script);
+    return false;
+	location.reload();
+}
+</script>
+
 </td>
 <td background= "http://www.itnewsbuzz.com/wp-content/uploads/2017/12/security.jpg" width="100">
 <center>
