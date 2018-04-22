@@ -9,15 +9,15 @@
   };
   firebase.initializeApp(config);
 // create object
-const preObject1 = document.getElementById('humidity');
+const preObject = document.getElementById('humidity');
 const preObject = document.getElementById('temperature');
 
 //create references
-const dbRefObject1 = firebase.database().ref().child('humidity');
+const dbRefObject = firebase.database().ref().child('humidity');
 const dbRefObject = firebase.database().ref().child('temperature');
 
 //sync changes
-dbRefObject1.on('value', snap => {
+dbRefObject.on('value', snap => {
     preObject.innerText = JSON.stringify(snap.val(), null, 3);
 });
 dbRefObject.on('value', snap => {
