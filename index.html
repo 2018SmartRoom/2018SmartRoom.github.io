@@ -46,7 +46,202 @@ a.class2:hover, a.class2:active {
 <table width= "100%" border = "0">
 <tr>
 
-<td background= "https://wallpaperstudio10.com/static/wpdb/wallpapers/560x315/157696.jpg" width= "50%">
+<td background= "#include <ESP8266WiFi.h>
+#include <FirebaseArduino.h>
+#include <Ultrasonic.h>
+#include <ESP8266WiFi.h>
+
+#define LED     D0        // Led in NodeMCU at pin GPIO16 (D0).
+// Set these to run example.
+#define FIREBASE_HOST "securitysystem-78ab8.firebaseio.com"
+#define FIREBASE_AUTH "sK5yUwT0zBrl9X0ht8SuQBaEFG8y1ff59tUBjcI8"
+
+#define WIFI_SSID "WiPi" //use wireless router name
+#define WIFI_PASSWORD "raspi6217" //use wireless router password
+
+#define NODE_NAME "HOME SECURITY"
+#define DOOR_RANGE 0 //number cm from node to  open door 
+
+String chipId= "SECURITY";
+
+// PushingBox scenario DeviceId code and API
+String deviceId = "vBAE8707AECFA1D2";
+const char* logServer = "api.pushingbox.com";
+
+WiFiClient client;
+//
+long lastMsg = 0;
+Ultrasonic ultrasonic(5, 4); // (Trig PIN,Echo PIN) d1(GPIO5) and d2(GPIO4) in Nodemcu 1.0
+int distance;
+bool DoorClosed;
+bool lastState;
+
+//StaticJsonBuffer<1> jsonBuffer;
+//JsonObject& timestamp = jsonBuffer.createObject();
+//JsonObject& updateData = jsonBuffer.createObject();
+void wifi_smartconfig()
+{
+  int cnt = 0;
+  WiFi.mode(WIFI_STA);
+  while (WiFi.status() != WL_CONNECTED) {
+    digitalWrite(LED, LOW);          // turn the LED on.
+    Serial.print(".");
+    delay(250);
+    digitalWrite(LED, HIGH);          // turn the LED off.
+    delay(250);
+    Serial.print(".");
+    if (cnt++ >= 20) {
+        digitalWrite(LED, LOW);          // turn the LED on.
+        Serial.print(".");
+        delay(150);
+        digitalWrite(LED, HIGH);          // turn the LED off.
+        delay(550);
+      
+      Serial.print("Smartconfig...");
+      WiFi.beginSmartConfig();
+      while (1) {
+        delay(1000);
+        if (WiFi.smartConfigDone()) {
+          Serial.println("SmartConfig Success");
+          break;
+        }
+      }
+    }
+  }
+
+}
+
+
+void sendNotification(String message){
+
+  Serial.println("- connecting to Home Router SID: " + String(WIFI_SSID));
+  
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println();
+  Serial.println("- succesfully connected");
+  Serial.println("- starting client");
+  
+  WiFiClient client;
+
+  Serial.println("- connecting to pushing server: " + String(logServer));
+  if (client.connect(logServer, 80)) {
+    Serial.println("- succesfully connected");
+    
+    String postStr = "devid=";
+    postStr += String(deviceId);
+    postStr += "&message_parameter=";
+    postStr += String(message);
+    postStr += "\r\n\r\n";
+    
+    Serial.println("- sending data...");
+    
+    client.print("POST /pushingbox HTTP/1.1\n");
+    client.print("Host: api.pushingbox.com\n");
+    client.print("Connection: close\n");
+    client.print("Content-Type: application/x-www-form-urlencoded\n");
+    client.print("Content-Length: ");
+    client.print(postStr.length());
+    client.print("\n\n");
+    client.print(postStr);
+  }
+  client.stop();
+  Serial.println("- stopping the client");
+}
+void setup() {
+  Serial.begin(74880);
+  // Sending a notification to your mobile phone
+  // function takes the message as a parameter
+  sendNotification("SECURITY ALERT: Check Live Stream");
+  
+  pinMode(LED, OUTPUT);   // LED pin as output.    low to on led, high to off led
+  Serial.begin(9600);
+  pinMode(LED, OUTPUT);   // LED pin as output.    low to on led, high to off led
+  Serial.begin(9600);
+//      / connect to wifi.
+      WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+      Serial.print("connecting");
+      while (WiFi.status() != WL_CONNECTED) {
+        digitalWrite(LED, LOW);          // turn the LED on.
+        Serial.print(".");
+        delay(250);
+        digitalWrite(LED, HIGH);          // turn the LED on.
+        delay(250);
+}
+  
+  
+
+  wifi_smartconfig();
+  Serial.println();
+  Serial.print("connected: ");
+  Serial.println(WiFi.localIP());
+
+  Serial.println();
+  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+}
+
+void updateDistance()
+{
+  String path = chipId+ "/states";
+  FirebaseObject object= Firebase.get(path);
+
+  Firebase.setString("name", NODE_NAME);
+  bool DoorClosed = object.getBool("Door_Closed");
+  String name = Firebase.pushInt("distance", distance);
+ 
+  if (Firebase.failed()) {
+    Serial.print("settings failed:");
+    Serial.println(Firebase.error());
+    return;
+  }
+}
+
+void loop()
+{
+  distance = ultrasonic.distanceRead(CM);// CM or INC
+  Serial.print("Distance:" );
+  Serial.print(distance);
+  Serial.println(" cm" );
+  delay(100);
+  if (distance < DOOR_RANGE)
+  {
+    DoorClosed = true;
+    //recheck distance // anti noise
+    for (int i = 0; i < 5; i++)
+    {
+      distance = ultrasonic.distanceRead(CM);// CM or INC
+      if (distance > DOOR_RANGE)
+      {
+        DoorClosed = false;
+        break;
+      }
+    }
+  }
+ 
+  if (DoorClosed != lastState)
+  {
+    Serial.print("In Range:" );
+    Serial.print(DoorClosed);
+    lastState = DoorClosed;
+    updateDistance();
+  }
+  else
+  {
+    long now = millis();
+    if (distance > DOOR_RANGE) {//every 30 seconds
+      Serial.print("Update every:" );
+      lastMsg = now;
+      sendNotification("SECURITY ALERT: Check Live Stream");
+      
+      updateDistance();
+      delay(1000);
+    }
+  }
+  
+}" width= "50%">
 <center>
 <font face="Comic Sans" size="7" color="white">Security System</font><br />
 <a href='default.asp' id='Security' class='class2'>Check Security</a>
