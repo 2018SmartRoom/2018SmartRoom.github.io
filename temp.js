@@ -25,7 +25,7 @@ ref.on("value", function(snapshot){
 //sync changes
 //dbRefObject.on('value', snap => {
 //    preObject.innerText = JSON.stringify(snap.val(), null, 3);
-});
+//});
 //dbRefObject1.on('value', snap => {
 //    preObject1.innerText = JSON.stringify(snap.val(), null, 3);
 //});
