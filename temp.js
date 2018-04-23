@@ -8,6 +8,12 @@
     messagingSenderId: "177653835432"
   };
   firebase.initializeApp(config);
+
+var ref = firebase.database().ref();                           
+ref.on("value", function(snapshot){
+    output.innerHTML = JSON.stringify(snapshot.val(), null, 2);
+});
+/*
 // create object
 const preObject = document.getElementById('humidity');
 const preObject1 = document.getElementById('temperature');
