@@ -21,5 +21,5 @@ dbRefObject.on('value', snap => {
     preObject.innerText = JSON.stringify(snap.val(), null, 3);
 });
 dbRefObject1.on('value', snap => {
-    preObject.innerText = JSON.stringify(snap.val(), null, 3);
+    preObject1.innerText = JSON.stringify(snap.val(), null, 3);
 });
