@@ -9,7 +9,7 @@
   };
   firebase.initializeApp(config);
 
-var ref = database.ref("distance);
+var ref = database.ref("distance");
 ref.on("value", gotData, errData);
 
 function gotData(data) {
@@ -19,7 +19,7 @@ function gotData(data) {
 
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
-    // Look at each fruit object!
+    // Look at each distance object!
     var distance = distance[key];
   }
 }
