@@ -11,13 +11,18 @@
   
 // get elements
 const preObject = document.getElementById('SECURITY');
+const preObject = document.getElementById('distance');
 const ulList = document.getElementById('list');
 
 //create references
 const dbRefObject = firebase.database().ref().child('SECURITY');
+const dbRefObject = firebase.database().ref().child('distance');
 const dbRefList = dbRefObject.child('states');
 
 //sync changes
+dbRefObject.on('value', snap => {
+    preObject.innerText = JSON.stringify(snap.val(), null, 3);
+});
 dbRefObject.on('value', snap => {
     preObject.innerText = JSON.stringify(snap.val(), null, 3);
 });
