@@ -22,19 +22,15 @@ function gotData(data) {
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
     // Look at each distance object!
-    var distance = distance[key].distance;
-    console.log(distance);
+    var distances = distance[key].distances;
+    console.log(distances);
   }
 }
-} 
 
 function errData(err) {
  console.log('Error');
  console.log(err);
 }
- /*
-  f 
-*/
 /* 
 // get elements
 const preObject = document.getElementById('SECURITY');
